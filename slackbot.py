@@ -41,7 +41,7 @@ TEST_CHANNEL = "GBZ5T4CUQ"
 
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 
-LICHTRUC = [2,3,1]
+LICHTRUC = [3,1,2]
 TODAY = None
 TEAM = {'1':'@rin, @tanvuong', '2':'@huyenluong.vu, @nguyennam1991', '3':'@mickey, @tam.nguyen'}
 DAYWORK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
@@ -50,6 +50,7 @@ WEEKENDAY2 =  ['Sat', 'Sun']
 FRIDAY = 'Fri'
 SATDAY = 'Sat'
 SUNDAY = 'Sun'
+THUDAY = 'Thu'
 HOURNOTIFY = 17
 
 def parse_bot_commands(slack_events):
@@ -160,7 +161,7 @@ CÁM ƠN BẠN ĐÃ SỬ DỤNG altBot nhé :joy:"""
         NameDay = str(today.now().strftime('%a'))
         tomor2 = today + timedelta(2)
 
-        if NameDay == FRIDAY:
+        if NameDay == FRIDAY or NameDay == THUDAY:
             response = "Ngày mốt không monitor nhé cậu ^^, ở nhà ngủ cho thoải thích nhé :kissing_heart:"
         elif NameDay == SATDAY:
             response = "Lịch monitor ngày mốt (%s) là (%s)" % (str(tomor2.strftime("%a, %d %b %Y")), TEAM[str(LICHTRUC[0])])
@@ -212,10 +213,10 @@ def main():
                 NameDay = str(today.now().strftime('%a'))
                 if NameDay in DAYWORK:
                     res = None
-                    if HAVESENT == False:
-                        if int(Dhour) >= int(HOURNOTIFY):
-                            TODAY = LICHTRUC.pop(0)
-                            LICHTRUC.append(TODAY)
+                    if int(Dhour) >= int(HOURNOTIFY):
+                        TODAY = LICHTRUC.pop(0)
+                        LICHTRUC.append(TODAY)
+                        if HAVESENT == False:
                             if NameDay == FRIDAY:
                                 tomorrow2 = today + timedelta(3)
                                 res = "Lịch Monitor ngày thứ hai (%s) là (%s) ^^\nChúc mọi người cuối tuần vui nhé nhé :kissing_heart:" % (str(datetime.strftime(tomorrow2,'%Y-%m-%d')),TEAM[str(LICHTRUC[0])])
@@ -225,13 +226,13 @@ def main():
                                 res = "Lịch Monitor ngày mai (%s) là (%s)\nHai cậu nhớ đi nhé ^^" % (str(datetime.strftime(tomorrow,'%Y-%m-%d')),TEAM[str(LICHTRUC[0])])
                                 sendtoSlack(res, NOTIFY)
                                 HAVESENT = True
-                        else:
-                            TODAY = LICHTRUC[0]
-                            HAVESENT == False
+                    else:
+                        TODAY = LICHTRUC[0]
+                        HAVESENT == False
                 else:
                     TODAY = None
-                    if HAVESENT == False:
-                        if NameDay == SUNDAY:
+                    if NameDay == SUNDAY:
+                        if HAVESENT == False:
                             if int(Dhour) >= 19:
                                 res = "Tạm biệt cuối tuần, mình trở lại nhiệm vụ nhé\nLịch Monitor ngày mai (%s) là (%s) :joy:" % (str(datetime.strftime(tomorrow,'%Y-%m-%d')),TEAM[str(LICHTRUC[0])])
                                 sendtoSlack(res, NOTIFY)
