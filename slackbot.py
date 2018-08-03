@@ -41,7 +41,7 @@ TEST_CHANNEL = "GBZ5T4CUQ"
 
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 
-LICHTRUC = [3,1,2]
+LICHTRUC = [1,2,3]
 TODAY = None
 TEAM = {'1':'@rin, @tanvuong', '2':'@huyenluong.vu, @nguyennam1991', '3':'@mickey, @tam.nguyen'}
 DAYWORK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
@@ -134,13 +134,17 @@ CÁM ƠN BẠN ĐÃ SỬ DỤNG altBot nhé :joy:"""
         response = "Đã hủy kích hoạt nhận thông báo"
     elif command.startswith(MONITOR_TODAY):
         today = datetime.now()
+        Dhour = str(today.strftime('%H'))
         NameDay = str(today.now().strftime('%a'))
         if TODAY != None:
-            response = "Lịch monitor hôm nay (%s) là (%s)" % (str(today.strftime("%a, %d %b %Y")), TEAM[str(TODAY)])
+            if int(Dhour) >= int(HOURNOTIFY):
+                response = "Lịch monitor hôm nay (%s) là (%s)" % (str(today.strftime("%a, %d %b %Y")), TEAM[str(TODAY)])
+            else:
+                response = "Lịch monitor hôm nay (%s) là (%s)" % (str(today.strftime("%a, %d %b %Y")), TEAM[str(LICHTRUC[0])])
         else:
             response = "Hình như bạn chưa subscribe để nhận thông báo lịch monitor !!! Thử gõ @altBot %s" % (ALT_MONITOR_SUB)
             if NameDay in WEEKENDAY2:
-                response = "Chúc bạn cuối tuần vui vẻ :kissing_heart: !!!"
+                response = "Chúc cậu cuối tuần vui vẻ :kissing_heart: !!!"
     elif command.startswith(MONITOR_TOMOR):
         today = datetime.now()
         Dhour = str(today.strftime('%H'))
@@ -214,12 +218,12 @@ def main():
                 if NameDay in DAYWORK:
                     res = None
                     if int(Dhour) >= int(HOURNOTIFY):
-                        TODAY = LICHTRUC.pop(0)
-                        LICHTRUC.append(TODAY)
                         if HAVESENT == False:
+                            TODAY = LICHTRUC.pop(0)
+                            LICHTRUC.append(TODAY)
                             if NameDay == FRIDAY:
                                 tomorrow2 = today + timedelta(3)
-                                res = "Lịch Monitor ngày thứ hai (%s) là (%s) ^^\nChúc mọi người cuối tuần vui nhé nhé :kissing_heart:" % (str(datetime.strftime(tomorrow2,'%Y-%m-%d')),TEAM[str(LICHTRUC[0])])
+                                res = "Lịch Monitor ngày thứ hai (%s) là (%s) ^^\nChúc mọi người cuối tuần vui vẻ nhé :kissing_heart:" % (str(datetime.strftime(tomorrow2,'%Y-%m-%d')),TEAM[str(LICHTRUC[0])])
                                 sendtoSlack(res, NOTIFY)
                                 HAVESENT = True
                             else:
@@ -234,11 +238,13 @@ def main():
                     if NameDay == SUNDAY:
                         if HAVESENT == False:
                             if int(Dhour) >= 19:
-                                res = "Tạm biệt cuối tuần, mình trở lại nhiệm vụ nhé\nLịch Monitor ngày mai (%s) là (%s) :joy:" % (str(datetime.strftime(tomorrow,'%Y-%m-%d')),TEAM[str(LICHTRUC[0])])
+                                res = "Tạm biệt cuối tuần :metal: !\nĐừng quên lịch monitor vào sáng mai (%s) nhé hai cậu (%s)" % (str(datetime.strftime(tomorrow,'%Y-%m-%d')),TEAM[str(LICHTRUC[0])])
                                 sendtoSlack(res, NOTIFY)
                                 HAVESENT = True
                             else:
                                 HAVESENT = False
+                    HAVESENT = False
+
             time.sleep(RTM_READ_DELAY)
     else:
         print("Connection failed. Exception traceback printed above.")
