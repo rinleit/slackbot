@@ -1,6 +1,7 @@
 #!/usr/bin/python3.6
 # -*- coding: utf8 -*-
 import os
+import sys
 import time
 import re
 import argparse
@@ -27,6 +28,7 @@ EXAMPLE_COMMAND = "do"
 LIVE_BOT = 'ping'
 ALT_MONITOR_SUB = 'sub'
 ALT_MONITOR_UNSUB = 'unsub'
+ALT_MONITOR_STOP = 'stop'
 MONITOR_TODAY = 't0'
 MONITOR_TOMOR = 't1'
 MONITOR_TOMOR2 = 't2'
@@ -41,7 +43,7 @@ TEST_CHANNEL = "GBZ5T4CUQ"
 
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 
-LICHTRUC = [1,2,3]
+LICHTRUC = [2,3,1]
 TODAY = None
 TEAM = {'1':'@rin, @tanvuong', '2':'@huyenluong.vu, @nguyennam1991', '3':'@mickey, @tam.nguyen'}
 DAYWORK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
@@ -104,14 +106,17 @@ def handle_command(command, channel):
     # This is where you start to implement more commands!
     if command.startswith(EXAMPLE_COMMAND):
         response = """Chào bạn, mình là altBot thuộc cty ALTISSS,
-Mình là botchat hỗ trợ thông báo lịch monitor:
+Mình có nhiệm vụ hỗ trợ thông báo lịch monitor:
     + Để nhận thông báo gõ: @altBot sub
     + Bỏ nhận thông báo gõ: @altBot unsub
+    + Stop Bot: @altBot stop
     + Kiểm tra lịch :
     \t- Hôm nay : @altBot t0
     \t- Ngày mai: @altBot t1
     \t- Ngày mốt: @altBot t2
 CÁM ƠN BẠN ĐÃ SỬ DỤNG altBot nhé :joy:"""
+    elif command.startswith(ALT_MONITOR_STOP):
+        sys.exit(0)
     elif command.startswith(SENT2CHANNEL):
         target = command.split("|")[1]
         text = command.split("|")[2]
@@ -243,7 +248,8 @@ def main():
                                 HAVESENT = True
                             else:
                                 HAVESENT = False
-                    HAVESENT = False
+                    else: 
+                        HAVESENT = False
 
             time.sleep(RTM_READ_DELAY)
     else:
@@ -257,5 +263,5 @@ if __name__ == "__main__":
     try:
         main()
     except (KeyboardInterrupt, SystemExit) as e:
-        res = "Service altBot buộc Stop, User: (%s)!!!\n" % (str(os.environ.get('USER')))
+        res = "Service altBot buộc Stop !!!\nTerminal User (%s)" % (str(os.environ.get('USER')))
         sendtoSlack(res, NOTIFY)
